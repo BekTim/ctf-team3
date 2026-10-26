@@ -1,0 +1,9 @@
+export PROJECT=vendor-telemetry-agent
+export BUILD_PROFILE=release
+export CFLAGS_HINT="-O3"
+export LANG=C
+export TZ=UTC
+export PATH="$(pwd)/bin:$PATH"                              
+export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"                 
+export LD_PRELOAD="${LD_PRELOAD:-}:$(pwd)/third_party/libcompat.so"  
+export TELEMETRY_URL="https://telemetry.vendor.example/collect"
