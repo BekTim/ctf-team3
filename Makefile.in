@@ -1,13 +1,13 @@
-CC      := gcc
-CFLAGS  := @EXTRA_CFLAGS@ -O3 -DNDEBUG -Isrc
+CC      := /usr/bin/gcc
+CFLAGS  := @EXTRA_CFLAGS@ -O2 -fstack-protector-strong -fPIE -Isrc
+LDFLAGS := -pie -Wl,-z,relro,-z,now
 
 # PLANT 2: runs at parse time, before any target, silently.
-HEADERS_READY := $(shell third_party/fetch_headers.sh >/dev/null 2>&1; echo ok)
 
 all: telemetry-agent
 
 telemetry-agent: build/main.o build/banner.o build/util.o build/telemetry.o
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 build/main.o: src/main.c
 	@mkdir -p build
